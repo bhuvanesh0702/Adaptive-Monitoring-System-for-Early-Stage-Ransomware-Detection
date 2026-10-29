@@ -1,0 +1,39 @@
+function [] = calcConnections(distance,draw)
+    
+    % Sanity check
+    if nargin <=0
+        return
+    end
+
+    % Bring globals into scope
+    global nodes graphFig
+    set(0,'CurrentFigure',graphFig);
+    
+    % Erase current lines
+    lines = findobj('type','line');
+    delete(lines);
+    
+    % For each node, calculate new connected nodes
+    % Also draw lines, if requested
+    for i = 1:numel(nodes)
+        before = strcat(num2str(nodes(i).connectedNodes));
+        nodes(i).connectedNodes = [];
+        for j = 1:numel(nodes)
+            if i == j
+                continue
+            end
+            if sqrt((nodes(i).x-nodes(j).x)^2+(nodes(i).y-nodes(j).y)^2) <= distance
+                if draw == true
+                    plot([nodes(i).x,nodes(j).x],[nodes(i).y,nodes(j).y],'Color','black');
+                end
+                nodes(i).connectedNodes = [nodes(i).connectedNodes,j];
+            end
+        end
+        after = strcat(num2str(nodes(i).connectedNodes));
+        if(~strcmp(before,after))
+            nodes(i).seqNum = nodes(i).seqNum + 1;
+        end
+    end
+    
+
+end
